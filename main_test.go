@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestServiceReturnsOk(t *testing.T) {
@@ -16,8 +17,8 @@ func TestServiceReturnsOk(t *testing.T) {
 	handler := http.HandlerFunc(mainHandle)
 	handler.ServeHTTP(responseRecorder, req)
 
+	require.Equal(t, http.StatusOK, responseRecorder.Code)
 	assert.NotEmpty(t, responseRecorder.Body)
-	assert.Equal(t, http.StatusOK, responseRecorder.Code)
 
 }
 
@@ -29,8 +30,9 @@ func TestWhenWrongCity(t *testing.T) {
 	handler.ServeHTTP(responseRecorder, req)
 
 	expected := "wrong city value"
-	assert.Equal(t, http.StatusBadRequest, responseRecorder.Code)
+	require.Equal(t, http.StatusBadRequest, responseRecorder.Code)
 	assert.Equal(t, expected, responseRecorder.Body.String())
+
 }
 
 func TestWhenCountMoreThanTotal(t *testing.T) {
@@ -39,6 +41,8 @@ func TestWhenCountMoreThanTotal(t *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(mainHandle)
 	handler.ServeHTTP(responseRecorder, req)
+
+	require.Equal(t, http.StatusOK, responseRecorder.Code)
 
 	expected := 4
 	result := responseRecorder.Body.String()
